@@ -2,17 +2,22 @@
 #define MATHPARSER_H
 #define STACKSIZE 4096
 #define INSTRUCTIONLISTSIZE 16384
+#define NUMFUNC 5
+#define NUMOP 5
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #include <QString>
 
 typedef QString String;
 typedef QChar Char;
 
-
-static Char op[5]={'+','-','*','/','^'};
-enum Instruction{PUSHVAR,PUSHVAL,ADD,SUB,MULT,DIV,INV,POW,CALL,END};
-static long opcode[5]={ADD,SUB,MULT,DIV,POW};
+extern Char op[NUMOP];
+extern String funcName[NUMFUNC];
+extern int funcNumArgs[NUMFUNC];
+enum Instruction{PUSHVAR,PUSHVAL,ADD,SUB,MULT,DIV,INV,POW_N,POW,SIN,COS,TAN,EXP,CALL,END};
+extern long opcode[NUMOP];
+extern long funcCode[NUMFUNC];
 
 template <class C>
 class MathEval
@@ -26,7 +31,7 @@ public:
     void pushVal(C val){stack[stackPos++]=val;}
     C pop(){return stack[--stackPos];}
     C result(){return stack[stackPos-1];}
-    void run(){stackPos=0; readPos=0; while(!done) processInstruction();}
+    void run(){done=0; stackPos=0; readPos=0; while(!done) processInstruction();}
     void processInstruction()
     {
         long instruction;
@@ -58,8 +63,23 @@ public:
         case INV:
             {inv();}
             break;
+        case POW_N:
+            {int n; read(&n,sizeof(int)); pow_(n);}
+            break;
         case POW:
-            {int n; read(&n,sizeof(int)); pow(n);}
+            {pow_();}
+            break;
+        case SIN:
+            {sin_();}
+            break;
+        case COS:
+            {cos_();}
+            break;
+        case TAN:
+            {tan_();}
+            break;
+        case EXP:
+            {exp_();}
             break;
         case END:
             {done=true;}
@@ -67,21 +87,19 @@ public:
         }
     }
 
-    void add(){C b=pop(),a=pop();
-               pushVal(a+b);}
-    void sub(){C b=pop(),a=pop();
-                pushVal(a-b);}
-    void mult(){C b=pop(),a=pop();
-                pushVal(a*b);}
-    void div(){C b=pop(),a=pop();
-               pushVal(a/b);}
-    virtual void inv(){C a=pop();
-               pushVal(1./a);}
-    void pow(int n){C a=pop();
-                pushVal(pow(a,n));}
+    void add(){C b=pop();
+               pushVal(pop()+b);}
+    void sub(){C b=pop();
+                pushVal(pop()-b);}
+    void mult(){C b=pop();
+                pushVal(pop()*b);}
+    void div(){C b=pop();
+               pushVal(pop()/b);}
+    virtual void inv(){pushVal(1./pop());}
+    void pow_(int n){pushVal(pow_(pop(),n));}
     void read(void* dst,int size){memcpy(dst,instructionList+readPos,size); readPos+=size;}
     void write(void* src,int size){memcpy(instructionList+writePos,src,size);writePos+=size;}
-    C pow(C val, int n){return n>0?pow1(val,n):n<0?1/pow1(val,-n):1;}
+    C pow_(C val, int n){return n>0?pow1(val,n):n<0?1/pow1(val,-n):1;}
     C pow1(C val,int n){
         if(n==1)
             return val;
@@ -91,10 +109,13 @@ public:
             return tmp*tmp*(n%2?val:1);
         }
     }
-    /*virtual void pow();
-    virtual void sin();
-    virtual void cos();
-    virtual void tan();*/
+    virtual void pow_() {C b=pop(),a=pop();
+                       pushVal(pow(a,b));}
+    virtual void sin_() {pushVal(sin(pop()));}
+    virtual void cos_() {pushVal(cos(pop()));}
+    virtual void tan_() {pushVal(tan(pop()));}
+    virtual void exp_() {pushVal(exp(pop()));}
+
 private:
     C stack[STACKSIZE];
     C variables[256];
@@ -195,7 +216,12 @@ private:
         if((str[pos]>='0' && str[pos]<='9')||str[pos]=='-')
             return parseFloatNumber(pos);
         else if(str[pos]>='a' && str[pos]<='z')
-            return parseVar(pos);
+        {
+            if(pos<str.length()-1 && str[pos+1]>='a' && str[pos+1]<='z')
+                return parseFunc(pos);
+            else
+                return parseVar(pos);
+        }
         else if(str[pos]=='(')
         {
             if(pos>=str.length()-1)
@@ -252,6 +278,48 @@ private:
         mathEval->write(&opcode_,sizeof(long));
         mathEval->write(&c,sizeof(char));
         return 1;
+    }
+    int parseFunc(int pos)
+    {
+        int newpos=pos;
+        while(str[newpos]>='a' && str[newpos]<='z')
+            ++newpos;
+        if(str[newpos]!='(')
+            return 0;
+        String funcName_=str.mid(pos,newpos-pos);
+        ++newpos;
+        int funcIndex=0;
+        while(funcIndex<NUMFUNC)
+        {
+            if(funcName_==funcName[funcIndex])
+            {
+                int numArgs=funcNumArgs[funcIndex];
+                int lenread=parseToMathEval(0,newpos);
+                if(lenread==0)
+                    return 0;
+                newpos+=lenread;
+                --numArgs;
+                while(numArgs)
+                {
+                    if(str[newpos]!=',')
+                        return 0;
+                    ++newpos;
+                    lenread=parseToMathEval(0,newpos);
+                    if(lenread==0)
+                        return 0;
+                    newpos+=lenread;
+                    --numArgs;
+                }
+                if(str[newpos]!=')')
+                    return 0;
+                ++newpos;
+                long opcode_=funcCode[funcIndex];
+                mathEval->write(&opcode_,sizeof(long));
+                return newpos-pos;
+            }
+            ++funcIndex;
+        }
+        return 0;
     }
 
     MathEval<C> *mathEval;
