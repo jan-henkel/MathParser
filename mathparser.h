@@ -39,26 +39,22 @@ public:
         switch(instruction)
         {
         case PUSHVAR:
-            {int c; read(&c,sizeof(int)); pushVar(c);}
+            {pushvar_();}
             break;
         case PUSHVAL:
-            {
-            C val;
-            read(&val,sizeof(C));
-            pushVal(val);
-        }
+            {pushval_();}
             break;
         case ADD:
-            {add();}
+            {add_();}
             break;
         case SUB:
-            {sub();}
+            {sub_();}
             break;
         case MULT:
-            {mult();}
+            {mult_();}
             break;
         case DIV:
-            {div();}
+            {div_();}
             break;
         case INV:
             {inv();}
@@ -86,15 +82,12 @@ public:
             break;
         }
     }
-
-    void add(){C b=pop();
-               pushVal(pop()+b);}
-    void sub(){C b=pop();
-                pushVal(pop()-b);}
-    void mult(){C b=pop();
-                pushVal(pop()*b);}
-    void div(){C b=pop();
-               pushVal(pop()/b);}
+    inline void pushval_() {C val; read(&val,sizeof(C)); pushVal(val);}
+    inline void pushvar_() {int c; read(&c,sizeof(int)); pushVar(c);}
+    inline void add_(){stack[stackPos-2]+=stack[stackPos-1];--stackPos;}
+    inline void sub_(){stack[stackPos-2]-=stack[stackPos-1];--stackPos;}
+    inline void mult_(){stack[stackPos-2]*=stack[stackPos-1];--stackPos;}
+    inline void div_(){stack[stackPos-2]/=stack[stackPos-1];--stackPos;}
     virtual void inv(){pushVal(1./pop());}
     void pow_(int n){pushVal(pow_(pop(),n));}
     void read(void* dst,int size){memcpy(dst,instructionList+readPos,size); readPos+=size;}
