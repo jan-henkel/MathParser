@@ -27,7 +27,7 @@ public:
     void reset(){readPos=0; writePos=0; stackPos=0; done=false;}
     void setVar(char c,C val){variables[c]=val;}
     C getVar(char c){return variables[c];}
-    void pushVar(char c){stack[stackPos++]=variables[c];}
+    void pushVar(int c){stack[stackPos++]=variables[c];}
     void pushVal(C val){stack[stackPos++]=val;}
     C pop(){return stack[--stackPos];}
     C result(){return stack[stackPos-1];}
@@ -39,7 +39,7 @@ public:
         switch(instruction)
         {
         case PUSHVAR:
-            {char c; read(&c,sizeof(char)); pushVar(c);}
+            {int c; read(&c,sizeof(int)); pushVar(c);}
             break;
         case PUSHVAL:
             {
@@ -273,10 +273,10 @@ private:
     }
     int parseVar(int pos)
     {
-        char c=str[pos].toLatin1();
+        int c=str[pos].toLatin1();
         long opcode_=PUSHVAR;
         mathEval->write(&opcode_,sizeof(long));
-        mathEval->write(&c,sizeof(char));
+        mathEval->write(&c,sizeof(int));
         return 1;
     }
     int parseFunc(int pos)
