@@ -17,12 +17,15 @@ public:
     ~MathParserMainWindow();
 
 private slots:
-    void on_pushButton_clicked();
+    void on_calculatePushButton_clicked();
+    void on_variablesLineEdit_textEdited(const QString &arg1);
+    void on_variablesComboBox_currentIndexChanged(int index);
 
 private:
     Ui::MathParserMainWindow *ui;
     MathParser<double> mathParser;
     MathEval<double> mathEval;
+    double *varptr[26];
 };
 
 #endif // MATHPARSERMAINWINDOW_H
