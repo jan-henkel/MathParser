@@ -1,7 +1,7 @@
 #ifndef MATHPARSER_H
 #define MATHPARSER_H
-#define STACKSIZE 4096
-#define INSTRUCTIONLISTSIZE 4096
+#define STACKSIZE 128
+#define INSTRUCTIONLISTSIZE 128
 #define NUMFUNC 5
 #define NUMOP 5
 #include <stdio.h>
@@ -160,27 +160,27 @@ public:
     inline void div_(){stack[stackPos-2]/=stack[stackPos-1];--stackPos;}
     inline void pvardiv_(){stack[stackPos-1]/=readVar();}
     inline void pvaldiv_(){stack[stackPos-1]/=readVal();}
-    inline virtual void inv_(){stack[stackPos-1]=1/stack[stackPos-1];}
-    inline virtual void pvarinv_(){stack[stackPos++]=1/(readVar());}
-    inline virtual void pvalinv_(){stack[stackPos++]=1/(readVal());}
-    inline virtual void pow_n_(){stack[stackPos-1]=pow_(stack[stackPos-1],readInt());}
-    inline virtual void pvarpow_n_(){C val=readVar(); stack[stackPos++]=pow_(val,readInt());}
-    inline virtual void pvalpow_n_(){C val=readVal(); stack[stackPos++]=pow_(val,readInt());}
-    inline virtual void pow_() {stack[stackPos-2]=pow(stack[stackPos-2],stack[stackPos-1]);--stackPos;}
-    inline virtual void pvarpow_(){stack[stackPos-1]=pow(stack[stackPos-1],readVar());}
-    inline virtual void pvalpow_(){stack[stackPos-1]=pow(stack[stackPos-1],readVal());}
-    inline virtual void sin_() {stack[stackPos-1]=sin(stack[stackPos-1]);}
-    inline virtual void pvarsin_(){stack[stackPos++]=sin(readVar());}
-    inline virtual void pvalsin_(){stack[stackPos++]=sin(readVal());}
-    inline virtual void cos_() {stack[stackPos-1]=cos(stack[stackPos-1]);}
-    inline virtual void pvarcos_(){stack[stackPos++]=cos(readVar());}
-    inline virtual void pvalcos_(){stack[stackPos++]=cos(readVal());}
-    inline virtual void tan_() {stack[stackPos-1]=tan(stack[stackPos-1]);}
-    inline virtual void pvartan_(){stack[stackPos++]=tan(readVar());}
-    inline virtual void pvaltan_(){stack[stackPos++]=tan(readVal());}
-    inline virtual void exp_() {stack[stackPos-1]=exp(stack[stackPos-1]);}
-    inline virtual void pvarexp_(){stack[stackPos++]=exp(readVar());}
-    inline virtual void pvalexp_(){stack[stackPos++]=exp(readVal());}
+    inline void inv_(){stack[stackPos-1]=1/stack[stackPos-1];}
+    inline void pvarinv_(){stack[stackPos++]=1/(readVar());}
+    inline void pvalinv_(){stack[stackPos++]=1/(readVal());}
+    inline void pow_n_(){stack[stackPos-1]=pow_(stack[stackPos-1],readInt());}
+    inline void pvarpow_n_(){C val=readVar(); stack[stackPos++]=pow_(val,readInt());}
+    inline void pvalpow_n_(){C val=readVal(); stack[stackPos++]=pow_(val,readInt());}
+    inline void pow_() {stack[stackPos-2]=pow(stack[stackPos-2],stack[stackPos-1]);--stackPos;}
+    inline void pvarpow_(){stack[stackPos-1]=pow(stack[stackPos-1],readVar());}
+    inline void pvalpow_(){stack[stackPos-1]=pow(stack[stackPos-1],readVal());}
+    inline void sin_() {stack[stackPos-1]=sin(stack[stackPos-1]);}
+    inline void pvarsin_(){stack[stackPos++]=sin(readVar());}
+    inline void pvalsin_(){stack[stackPos++]=sin(readVal());}
+    inline void cos_() {stack[stackPos-1]=cos(stack[stackPos-1]);}
+    inline void pvarcos_(){stack[stackPos++]=cos(readVar());}
+    inline void pvalcos_(){stack[stackPos++]=cos(readVal());}
+    inline void tan_() {stack[stackPos-1]=tan(stack[stackPos-1]);}
+    inline void pvartan_(){stack[stackPos++]=tan(readVar());}
+    inline void pvaltan_(){stack[stackPos++]=tan(readVal());}
+    inline void exp_() {stack[stackPos-1]=exp(stack[stackPos-1]);}
+    inline void pvarexp_(){stack[stackPos++]=exp(readVar());}
+    inline void pvalexp_(){stack[stackPos++]=exp(readVal());}
     inline void read(void* dst,int size){memcpy(dst,dataptr,size); dataptr+=size;}
     inline void write(void* src,int size){memcpy(dataptr,src,size);dataptr+=size;}
     inline C readVal(){C val=*(reinterpret_cast<C*>(dataptr)); dataptr+=sizeof(C); return val;}
@@ -222,14 +222,14 @@ public:
     }
 
 private:
+    int* instrptr;
+    int* endInstr;
+    char* dataptr;
+    int stackPos;
+    int instructionList[INSTRUCTIONLISTSIZE];
     C stack[STACKSIZE];
     C variables[26];
-    int instructionList[INSTRUCTIONLISTSIZE];
     char data[INSTRUCTIONLISTSIZE*8];
-    int stackPos;
-    int* endInstr;
-    int* instrptr;
-    char* dataptr;
 };
 
 template <class C>
