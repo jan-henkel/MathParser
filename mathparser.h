@@ -450,12 +450,12 @@ private:
         int newpos=pos;
         if(str[pos]=='-')
             ++newpos;
-        while(str[newpos]>='0' && str[newpos]<='9')
+        while(newpos<str.length() && str[newpos]>='0' && str[newpos]<='9')
             ++newpos;
-        if(str[newpos]=='.')
+        if(newpos<str.length() && str[newpos]=='.')
         {
             ++newpos;
-            while(str[newpos]>='0' && str[newpos]<='9')
+            while(newpos<str.length() && str[newpos]>='0' && str[newpos]<='9')
                 ++newpos;
         }
         C val=str.mid(pos,newpos-pos).toDouble();
