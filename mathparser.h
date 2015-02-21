@@ -1,8 +1,8 @@
 #ifndef MATHPARSER_H
 #define MATHPARSER_H
-#define STACKSIZE 128
-#define INSTRUCTIONLISTSIZE 128
-#define NUMFUNC 5
+#define STACKSIZE 256
+#define INSTRUCTIONLISTSIZE 256
+#define NUMFUNC 9
 #define NUMOP 5
 #include <stdio.h>
 #include <string.h>
@@ -15,9 +15,12 @@ typedef QChar Char;
 extern Char op[NUMOP];
 extern String funcName[NUMFUNC];
 extern int funcNumArgs[NUMFUNC];
-enum Instruction{PUSHVAR,PUSHVAL,ADD,PVARADD,PVALADD,SUB,PVARSUB,PVALSUB,MULT,PVARMULT,PVALMULT,DIV,PVARDIV,PVALDIV,INV,PVARINV,PVALINV,POW_N,PVARPOW_N,PVALPOW_N,POW,PVARPOW,PVALPOW,SIN,PVARSIN,PVALSIN,COS,PVARCOS,PVALCOS,TAN,PVARTAN,PVALTAN,EXP,PVAREXP,PVALEXP};
+enum Instruction{PUSHVAR,PUSHVAL,ADD,PVARADD,PVALADD,SUB,PVARSUB,PVALSUB,MULT,PVARMULT,PVALMULT,DIV,PVARDIV,PVALDIV,INV,PVARINV,PVALINV,POW_N,PVARPOW_N,PVALPOW_N,POW,PVARPOW,PVALPOW,SIN,PVARSIN,PVALSIN,COS,PVARCOS,PVALCOS,TAN,PVARTAN,PVALTAN,EXP,PVAREXP,PVALEXP,LOG,PVARLOG,PVALLOG,RE,PVARRE,PVALRE,IM,PVARIM,PVALIM,SQRT,PVARSQRT,PVALSQRT,NEG,PVARNEG,PVALNEG};
 extern int opcode[NUMOP];
 extern int funcCode[NUMFUNC];
+
+extern double Re(double);
+extern double Im(double);
 
 template <class C>
 class MathEval
@@ -144,6 +147,51 @@ public:
         case PVALEXP:
             {pvalexp_();}
             break;
+        case LOG:
+            {log_();}
+            break;
+        case PVARLOG:
+            {pvarlog_();}
+            break;
+        case PVALLOG:
+            {pvallog_();}
+            break;
+        case RE:
+            {re_();}
+            break;
+        case PVARRE:
+            {pvarre_();}
+            break;
+        case PVALRE:
+            {pvalre_();}
+            break;
+        case IM:
+            {im_();}
+            break;
+        case PVARIM:
+            {pvarim_();}
+            break;
+        case PVALIM:
+            {pvalim_();}
+            break;
+        case SQRT:
+            {sqrt_();}
+            break;
+        case PVARSQRT:
+            {pvarsqrt_();}
+            break;
+        case PVALSQRT:
+            {pvalsqrt_();}
+            break;
+        case NEG:
+            {neg_();}
+            break;
+        case PVARNEG:
+            {pvarneg_();}
+            break;
+        case PVALNEG:
+            {pvalneg_();}
+            break;
         }
     }
     inline void pushvar_() {pushVar(readInt());}
@@ -181,6 +229,21 @@ public:
     inline void exp_() {stack[stackPos-1]=exp(stack[stackPos-1]);}
     inline void pvarexp_(){stack[stackPos++]=exp(readVar());}
     inline void pvalexp_(){stack[stackPos++]=exp(readVal());}
+    inline void log_() {stack[stackPos-1]=log(stack[stackPos-1]);}
+    inline void pvarlog_(){stack[stackPos++]=log(readVar());}
+    inline void pvallog_(){stack[stackPos++]=log(readVal());}
+    inline void re_() {stack[stackPos-1]=Re(stack[stackPos-1]);}
+    inline void pvarre_(){stack[stackPos++]=Re(readVar());}
+    inline void pvalre_(){stack[stackPos++]=Re(readVal());}
+    inline void im_() {stack[stackPos-1]=Im(stack[stackPos-1]);}
+    inline void pvarim_(){stack[stackPos++]=Im(readVar());}
+    inline void pvalim_(){stack[stackPos++]=Im(readVal());}
+    inline void sqrt_() {stack[stackPos-1]=sqrt(stack[stackPos-1]);}
+    inline void pvarsqrt_(){stack[stackPos++]=sqrt(readVar());}
+    inline void pvalsqrt_(){stack[stackPos++]=sqrt(readVal());}
+    inline void neg_() {stack[stackPos-1]=-stack[stackPos-1];}
+    inline void pvarneg_() {stack[stackPos++]=-readVar();}
+    inline void pvalneg_() {stack[stackPos++]=-readVal();}
     inline void read(void* dst,int size){memcpy(dst,dataptr,size); dataptr+=size;}
     inline void write(void* src,int size){memcpy(dataptr,src,size);dataptr+=size;}
     inline C readVal(){C val=*(reinterpret_cast<C*>(dataptr)); dataptr+=sizeof(C); return val;}
@@ -222,14 +285,14 @@ public:
     }
 
 private:
-    int* instrptr;
-    int* endInstr;
-    char* dataptr;
-    int stackPos;
-    int instructionList[INSTRUCTIONLISTSIZE];
     C stack[STACKSIZE];
     C variables[26];
+    int instructionList[INSTRUCTIONLISTSIZE];
     char data[INSTRUCTIONLISTSIZE*8];
+    int stackPos;
+    int* endInstr;
+    int* instrptr;
+    char* dataptr;
 };
 
 template <class C>
@@ -315,28 +378,52 @@ private:
     }
     int parseAtomicExpression(int pos)
     {
-        if((str[pos]>='0' && str[pos]<='9')||str[pos]=='-')
-            return parseFloatNumber(pos);
-        else if(str[pos]>='a' && str[pos]<='z')
+        bool negative=(str[pos]=='-');
+        //int lenread;
+        int newpos=pos;
+        if(negative)
         {
-            if(pos<str.length()-1 && str[pos+1]>='a' && str[pos+1]<='z')
-                return parseFunc(pos);
-            else
-                return parseVar(pos);
-        }
-        else if(str[pos]=='(')
-        {
-            if(pos>=str.length()-1)
-                return 0;
-            int newpos=pos+1;
-            int lenread=parseToMathEval(0,newpos);
-            newpos+=lenread;
+            ++newpos;
             if(newpos>=str.length())
                 return 0;
-            if(str[newpos]!=')')
-                return 0;
-            ++newpos;
-            return newpos-pos;
+            if(str[newpos]>='0' && str[newpos]<='9')
+                return parseFloatNumber(pos);
+            else
+            {
+                newpos+=parseToMathEval(2,newpos);
+                if(newpos==pos+1)
+                    return 0;
+                else
+                {
+                    mathEval->writeInstr(NEG);
+                    return newpos-pos;
+                }
+            }
+        }
+        else
+        {
+            if(str[newpos]>='0' && str[newpos]<='9')
+                return parseFloatNumber(pos);
+            else if(str[pos].toLower()>='a' && str[pos].toLower()<='z')
+            {
+                if(pos<str.length()-1 && str[pos+1]>='a' && str[pos+1]<='z')
+                    return parseFunc(pos);
+                else
+                    return parseVar(pos);
+            }
+            else if(str[pos]=='(')
+            {
+                if(pos>=str.length()-1)
+                    return 0;
+                ++newpos;
+                newpos+=parseToMathEval(0,newpos);
+                if(newpos>=str.length())
+                    return 0;
+                if(str[newpos]!=')')
+                    return 0;
+                ++newpos;
+                return newpos-pos;
+            }
         }
         return 0;
     }
@@ -345,9 +432,13 @@ private:
         int newpos=pos;
         if(str[pos]=='-')
             ++newpos;
-        while(str[newpos]>='0' && str[newpos]<='9')
+        while(newpos<str.length() && str[newpos]>='0' && str[newpos]<='9')
             ++newpos;
-        if(str[newpos]=='.')
+        if(newpos>str.length())
+            return 0;
+        if(str[pos]=='-' && newpos==pos+1)
+            return 0;
+        if(newpos<str.length() && str[newpos]=='.')
         {
             return 0;
         }
@@ -374,7 +465,7 @@ private:
     }
     int parseVar(int pos)
     {
-        char c=str[pos].toLatin1();
+        char c=str[pos].toLower().toLatin1();
         mathEval->writeInstr(PUSHVAR);
         mathEval->writeInt((int)(c-'a'));
         return 1;
@@ -382,7 +473,7 @@ private:
     int parseFunc(int pos)
     {
         int newpos=pos;
-        while(str[newpos]>='a' && str[newpos]<='z')
+        while(str[newpos].toLower()>='a' && str[newpos].toLower()<='z')
             ++newpos;
         if(str[newpos]!='(')
             return 0;
