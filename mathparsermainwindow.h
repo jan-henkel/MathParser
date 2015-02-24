@@ -25,6 +25,8 @@ private slots:
 private:
     Ui::MathParserMainWindow *ui;
     QGraphicsScene scene;
+    void drawCoordinateSystem();
+    void drawPlot();
     MathParser<double> mathParser;
     MathEval<double> mathEval;
     double *varptr[26];
