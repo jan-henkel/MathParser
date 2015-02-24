@@ -1,12 +1,20 @@
 #include "mathparsermainwindow.h"
 #include "ui_mathparsermainwindow.h"
 
+double rangeXlower=-10;
+double rangeXupper=10;
+double rangeYlower=-2;
+double rangeYupper=2;
+int nPlotPoints=500;
+
 MathParserMainWindow::MathParserMainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MathParserMainWindow),
     mathParser(&mathEval)
 {
     ui->setupUi(this);
+    ui->plotGraphicsView->setScene(&scene);
+
     for(char c='a';c<='z';++c)
     {
         varptr[(int)(c-'a')]=mathEval.getVarPtr(c);
@@ -27,6 +35,33 @@ void MathParserMainWindow::on_calculatePushButton_clicked()
     {
         mathEval.run();
         ui->resultLineEdit->setText(QString::number(mathEval.result()));
+        double *xptr=varptr[(int)('x'-'a')];
+        double xtmp=*xptr;
+        double xstep=(rangeXupper-rangeXlower)/(double)(nPlotPoints-1);
+        double result;
+        bool first=true;
+        QPointF lastpoint;
+        QPointF currentpoint;
+        scene.clear();
+
+        for(int i=0;i<nPlotPoints;++i)
+        {
+            *xptr=rangeXlower+xstep*i;
+            mathEval.run();
+            result=mathEval.result();
+            if(result==result)
+            {
+                currentpoint=QPointF((double)i/(double)(nPlotPoints-1)*ui->plotGraphicsView->width(),(0.5-(result/(rangeYupper-rangeYlower)))*ui->plotGraphicsView->height());
+                if(!first)
+                    scene.addLine(QLineF(lastpoint,currentpoint));
+                lastpoint=currentpoint;
+                first=false;
+            }
+        }
+        *xptr=xtmp;
+        ui->plotGraphicsView->setSceneRect(0,0,ui->plotGraphicsView->width(),ui->plotGraphicsView->height());
+        ui->plotGraphicsView->update();
+        update();
     }
     else
         ui->resultLineEdit->setText("Invalid epression");

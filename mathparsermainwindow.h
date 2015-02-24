@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "mathparser.h"
+#include <QGraphicsView>
 
 namespace Ui {
 class MathParserMainWindow;
@@ -23,6 +24,7 @@ private slots:
 
 private:
     Ui::MathParserMainWindow *ui;
+    QGraphicsScene scene;
     MathParser<double> mathParser;
     MathEval<double> mathEval;
     double *varptr[26];

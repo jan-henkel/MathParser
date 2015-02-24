@@ -2,10 +2,11 @@
 #define MATHPARSER_H
 #define STACKSIZE 256
 #define INSTRUCTIONLISTSIZE 256
-#define NUMFUNC 9
+#define NUMFUNC 19
 #define NUMOP 5
 #include <stdio.h>
 #include <string.h>
+#include <cmath>
 #include <math.h>
 #include <QString>
 
@@ -15,7 +16,7 @@ typedef QChar Char;
 extern Char op[NUMOP];
 extern String funcName[NUMFUNC];
 extern int funcNumArgs[NUMFUNC];
-enum Instruction{PUSHVAR,PUSHVAL,ADD,PVARADD,PVALADD,SUB,PVARSUB,PVALSUB,MULT,PVARMULT,PVALMULT,DIV,PVARDIV,PVALDIV,INV,PVARINV,PVALINV,POW_N,PVARPOW_N,PVALPOW_N,POW,PVARPOW,PVALPOW,SIN,PVARSIN,PVALSIN,COS,PVARCOS,PVALCOS,TAN,PVARTAN,PVALTAN,EXP,PVAREXP,PVALEXP,LOG,PVARLOG,PVALLOG,RE,PVARRE,PVALRE,IM,PVARIM,PVALIM,SQRT,PVARSQRT,PVALSQRT,NEG,PVARNEG,PVALNEG};
+enum Instruction{PUSHVAR,PUSHVAL,ADD,PVARADD,PVALADD,SUB,PVARSUB,PVALSUB,MULT,PVARMULT,PVALMULT,DIV,PVARDIV,PVALDIV,INV,PVARINV,PVALINV,POW_N,PVARPOW_N,PVALPOW_N,POW,PVARPOW,PVALPOW,SIN,PVARSIN,PVALSIN,COS,PVARCOS,PVALCOS,TAN,PVARTAN,PVALTAN,EXP,PVAREXP,PVALEXP,LOG,PVARLOG,PVALLOG,RE,PVARRE,PVALRE,IM,PVARIM,PVALIM,SQRT,PVARSQRT,PVALSQRT,NEG,PVARNEG,PVALNEG,ABS,PVARABS,PVALABS,ASIN,PVARASIN,PVALASIN,ACOS,PVARACOS,PVALACOS,ATAN,PVARATAN,PVALATAN,SINH,PVARSINH,PVALSINH,COSH,PVARCOSH,PVALCOSH,TANH,PVARTANH,PVALTANH,ASINH,PVARASINH,PVALASINH,ACOSH,PVARACOSH,PVALACOSH,ATANH,PVARATANH,PVALATANH};
 extern int opcode[NUMOP];
 extern int funcCode[NUMFUNC];
 
@@ -192,6 +193,96 @@ public:
         case PVALNEG:
             {pvalneg_();}
             break;
+        case ABS:
+            {abs_();}
+            break;
+        case PVARABS:
+            {pvarabs_();}
+            break;
+        case PVALABS:
+            {pvalabs_();}
+            break;
+        case ASIN:
+            {asin_();}
+            break;
+        case PVARASIN:
+            {pvarasin_();}
+            break;
+        case PVALASIN:
+            {pvalasin_();}
+            break;
+        case ACOS:
+            {acos_();}
+            break;
+        case PVARACOS:
+            {pvaracos_();}
+            break;
+        case PVALACOS:
+            {pvalacos_();}
+            break;
+        case ATAN:
+            {atan_();}
+            break;
+        case PVARATAN:
+            {pvaratan_();}
+            break;
+        case PVALATAN:
+            {pvalatan_();}
+            break;
+        case SINH:
+            {sinh_();}
+            break;
+        case PVARSINH:
+            {pvarsinh_();}
+            break;
+        case PVALSINH:
+            {pvalsinh_();}
+            break;
+        case COSH:
+            {cosh_();}
+            break;
+        case PVARCOSH:
+            {pvarcosh_();}
+            break;
+        case PVALCOSH:
+            {pvalcosh_();}
+            break;
+        case TANH:
+            {tanh_();}
+            break;
+        case PVARTANH:
+            {pvartanh_();}
+            break;
+        case PVALTANH:
+            {pvaltanh_();}
+            break;
+        case ASINH:
+            {asinh_();}
+            break;
+        case PVARASINH:
+            {pvarasinh_();}
+            break;
+        case PVALASINH:
+            {pvalasinh_();}
+            break;
+        case ACOSH:
+            {acosh_();}
+            break;
+        case PVARACOSH:
+            {pvaracosh_();}
+            break;
+        case PVALACOSH:
+            {pvalacosh_();}
+            break;
+        case ATANH:
+            {atanh_();}
+            break;
+        case PVARATANH:
+            {pvaratanh_();}
+            break;
+        case PVALATANH:
+            {pvalatanh_();}
+            break;
         }
     }
     inline void pushvar_() {pushVar(readInt());}
@@ -244,6 +335,36 @@ public:
     inline void neg_() {stack[stackPos-1]=-stack[stackPos-1];}
     inline void pvarneg_() {stack[stackPos++]=-readVar();}
     inline void pvalneg_() {stack[stackPos++]=-readVal();}
+    inline void abs_() {stack[stackPos-1]=std::abs(stack[stackPos-1]);}
+    inline void pvarabs_() {stack[stackPos++]=std::abs(readVar());}
+    inline void pvalabs_() {stack[stackPos++]=std::abs(readVal());}
+    inline void asin_(){stack[stackPos-1]=asin(stack[stackPos-1]);}
+    inline void pvarasin_() {stack[stackPos++]=asin(readVar());}
+    inline void pvalasin_() {stack[stackPos++]=asin(readVal());}
+    inline void acos_(){stack[stackPos-1]=acos(stack[stackPos-1]);}
+    inline void pvaracos_() {stack[stackPos++]=acos(readVar());}
+    inline void pvalacos_() {stack[stackPos++]=acos(readVal());}
+    inline void atan_(){stack[stackPos-1]=atan(stack[stackPos-1]);}
+    inline void pvaratan_() {stack[stackPos++]=atan(readVar());}
+    inline void pvalatan_() {stack[stackPos++]=atan(readVal());}
+    inline void sinh_(){stack[stackPos-1]=sinh(stack[stackPos-1]);}
+    inline void pvarsinh_() {stack[stackPos++]=sinh(readVar());}
+    inline void pvalsinh_() {stack[stackPos++]=sinh(readVal());}
+    inline void cosh_(){stack[stackPos-1]=cosh(stack[stackPos-1]);}
+    inline void pvarcosh_() {stack[stackPos++]=cosh(readVar());}
+    inline void pvalcosh_() {stack[stackPos++]=cosh(readVal());}
+    inline void tanh_(){stack[stackPos-1]=tanh(stack[stackPos-1]);}
+    inline void pvartanh_() {stack[stackPos++]=tanh(readVar());}
+    inline void pvaltanh_() {stack[stackPos++]=tanh(readVal());}
+    inline void asinh_(){stack[stackPos-1]=asinh(stack[stackPos-1]);}
+    inline void pvarasinh_() {stack[stackPos++]=asinh(readVar());}
+    inline void pvalasinh_() {stack[stackPos++]=asinh(readVal());}
+    inline void acosh_(){stack[stackPos-1]=acosh(stack[stackPos-1]);}
+    inline void pvaracosh_() {stack[stackPos++]=acosh(readVar());}
+    inline void pvalacosh_() {stack[stackPos++]=acosh(readVal());}
+    inline void atanh_(){stack[stackPos-1]=atanh(stack[stackPos-1]);}
+    inline void pvaratanh_() {stack[stackPos++]=atanh(readVar());}
+    inline void pvalatanh_() {stack[stackPos++]=atanh(readVal());}
     inline void read(void* dst,int size){memcpy(dst,dataptr,size); dataptr+=size;}
     inline void write(void* src,int size){memcpy(dataptr,src,size);dataptr+=size;}
     inline C readVal(){C val=*(reinterpret_cast<C*>(dataptr)); dataptr+=sizeof(C); return val;}
