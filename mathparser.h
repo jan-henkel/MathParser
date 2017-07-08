@@ -122,6 +122,7 @@ public:
             break;
         case PVALSIN:
             {pvalsin_();}
+            break;
         case COS:
             {cos_();}
             break;
@@ -139,6 +140,7 @@ public:
             break;
         case PVALTAN:
             {pvaltan_();}
+            break;
         case EXP:
             {exp_();}
             break;
