@@ -13,8 +13,7 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mathparsermainwindow.cpp \
-    mathparser.cpp
+        mathparsermainwindow.cpp
 
 HEADERS  += mathparsermainwindow.h \
     mathparser.h

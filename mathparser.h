@@ -13,15 +13,22 @@
 typedef QString String;
 typedef QChar Char;
 
-extern Char op[NUMOP];
-extern String funcName[NUMFUNC];
-extern int funcNumArgs[NUMFUNC];
 enum Instruction{PUSHVAR,PUSHVAL,ADD,PVARADD,PVALADD,SUB,PVARSUB,PVALSUB,MULT,PVARMULT,PVALMULT,DIV,PVARDIV,PVALDIV,INV,PVARINV,PVALINV,POW_N,PVARPOW_N,PVALPOW_N,POW,PVARPOW,PVALPOW,SIN,PVARSIN,PVALSIN,COS,PVARCOS,PVALCOS,TAN,PVARTAN,PVALTAN,EXP,PVAREXP,PVALEXP,LOG,PVARLOG,PVALLOG,RE,PVARRE,PVALRE,IM,PVARIM,PVALIM,SQRT,PVARSQRT,PVALSQRT,NEG,PVARNEG,PVALNEG,ABS,PVARABS,PVALABS,ASIN,PVARASIN,PVALASIN,ACOS,PVARACOS,PVALACOS,ATAN,PVARATAN,PVALATAN,SINH,PVARSINH,PVALSINH,COSH,PVARCOSH,PVALCOSH,TANH,PVARTANH,PVALTANH,ASINH,PVARASINH,PVALASINH,ACOSH,PVARACOSH,PVALACOSH,ATANH,PVARATANH,PVALATANH};
-extern int opcode[NUMOP];
-extern int funcCode[NUMFUNC];
+constexpr Char op[NUMOP]={'+','-','*','/','^'};
+const String funcName[NUMFUNC]={"sin","cos","tan","exp","pow","log","Re","Im","sqrt","abs","asin","acos","atan","sinh","cosh","tanh","asinh","acosh","atanh"};
+constexpr int funcNumArgs[NUMFUNC]={1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+constexpr int opcode[NUMOP]={ADD,SUB,MULT,DIV,POW_N};
+constexpr int funcCode[NUMFUNC]={SIN,COS,TAN,EXP,POW,LOG,RE,IM,SQRT,ABS,ASIN,ACOS,ATAN,SINH,COSH,TANH,ASINH,ACOSH,ATANH};
 
-extern double Re(double);
-extern double Im(double);
+inline double Re(double r)
+{
+    return r;
+}
+
+inline double Im(double)
+{
+    return 0;
+}
 
 template <class C>
 class MathEval
