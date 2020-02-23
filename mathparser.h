@@ -37,9 +37,9 @@ public:
     MathEval():stackPos(0), endInstr(instructionList), instrptr(instructionList), dataptr(data){}
     void reset(){instrptr=instructionList; stackPos=0; dataptr=data; endInstr=instructionList;}
     C* getVarPtr(char c){return (c>='a' && c<='z')?(&variables[c-'a']):0;}
-    inline void pushPtrVal(C* ptr){stack[stackPos++]=*ptr;}
-    inline void pushVar(int c){stack[stackPos++]=*(variables+c);}
-    inline void pushVal(C val){stack[stackPos++]=val;}
+    void pushPtrVal(C* ptr){stack[stackPos++]=*ptr;}
+    void pushVar(int c){stack[stackPos++]=*(variables+c);}
+    void pushVal(C val){stack[stackPos++]=val;}
     C pop(){return stack[--stackPos];}
     C result(){return stack[stackPos-1];}
     void run(){
@@ -294,103 +294,103 @@ public:
             break;
         }
     }
-    inline void pushvar_() {pushVar(readInt());}
-    inline void pushval_() {pushVal(readVal());}
-    inline void add_(){stack[stackPos-2]+=stack[stackPos-1];--stackPos;}
-    inline void pvaradd_(){stack[stackPos-1]+=readVar();}
-    inline void pvaladd_(){stack[stackPos-1]+=readVal();}
-    inline void sub_(){stack[stackPos-2]-=stack[stackPos-1];--stackPos;}
-    inline void pvarsub_(){stack[stackPos-1]-=readVar();}
-    inline void pvalsub_(){stack[stackPos-1]-=readVal();}
-    inline void mult_(){stack[stackPos-2]*=stack[stackPos-1];--stackPos;}
-    inline void pvarmult_(){stack[stackPos-1]*=readVar();}
-    inline void pvalmult_(){stack[stackPos-1]*=readVal();}
-    inline void div_(){stack[stackPos-2]/=stack[stackPos-1];--stackPos;}
-    inline void pvardiv_(){stack[stackPos-1]/=readVar();}
-    inline void pvaldiv_(){stack[stackPos-1]/=readVal();}
-    inline void inv_(){stack[stackPos-1]=1/stack[stackPos-1];}
-    inline void pvarinv_(){stack[stackPos++]=1/(readVar());}
-    inline void pvalinv_(){stack[stackPos++]=1/(readVal());}
-    inline void pow_n_(){stack[stackPos-1]=pow_(stack[stackPos-1],readInt());}
-    inline void pvarpow_n_(){C val=readVar(); stack[stackPos++]=pow_(val,readInt());}
-    inline void pvalpow_n_(){C val=readVal(); stack[stackPos++]=pow_(val,readInt());}
-    inline void pow_() {stack[stackPos-2]=pow(stack[stackPos-2],stack[stackPos-1]);--stackPos;}
-    inline void pvarpow_(){stack[stackPos-1]=pow(stack[stackPos-1],readVar());}
-    inline void pvalpow_(){stack[stackPos-1]=pow(stack[stackPos-1],readVal());}
-    inline void sin_() {stack[stackPos-1]=sin(stack[stackPos-1]);}
-    inline void pvarsin_(){stack[stackPos++]=sin(readVar());}
-    inline void pvalsin_(){stack[stackPos++]=sin(readVal());}
-    inline void cos_() {stack[stackPos-1]=cos(stack[stackPos-1]);}
-    inline void pvarcos_(){stack[stackPos++]=cos(readVar());}
-    inline void pvalcos_(){stack[stackPos++]=cos(readVal());}
-    inline void tan_() {stack[stackPos-1]=tan(stack[stackPos-1]);}
-    inline void pvartan_(){stack[stackPos++]=tan(readVar());}
-    inline void pvaltan_(){stack[stackPos++]=tan(readVal());}
-    inline void exp_() {stack[stackPos-1]=exp(stack[stackPos-1]);}
-    inline void pvarexp_(){stack[stackPos++]=exp(readVar());}
-    inline void pvalexp_(){stack[stackPos++]=exp(readVal());}
-    inline void log_() {stack[stackPos-1]=log(stack[stackPos-1]);}
-    inline void pvarlog_(){stack[stackPos++]=log(readVar());}
-    inline void pvallog_(){stack[stackPos++]=log(readVal());}
-    inline void re_() {stack[stackPos-1]=Re(stack[stackPos-1]);}
-    inline void pvarre_(){stack[stackPos++]=Re(readVar());}
-    inline void pvalre_(){stack[stackPos++]=Re(readVal());}
-    inline void im_() {stack[stackPos-1]=Im(stack[stackPos-1]);}
-    inline void pvarim_(){stack[stackPos++]=Im(readVar());}
-    inline void pvalim_(){stack[stackPos++]=Im(readVal());}
-    inline void sqrt_() {stack[stackPos-1]=sqrt(stack[stackPos-1]);}
-    inline void pvarsqrt_(){stack[stackPos++]=sqrt(readVar());}
-    inline void pvalsqrt_(){stack[stackPos++]=sqrt(readVal());}
-    inline void neg_() {stack[stackPos-1]=-stack[stackPos-1];}
-    inline void pvarneg_() {stack[stackPos++]=-readVar();}
-    inline void pvalneg_() {stack[stackPos++]=-readVal();}
-    inline void abs_() {stack[stackPos-1]=std::abs(stack[stackPos-1]);}
-    inline void pvarabs_() {stack[stackPos++]=std::abs(readVar());}
-    inline void pvalabs_() {stack[stackPos++]=std::abs(readVal());}
-    inline void asin_(){stack[stackPos-1]=asin(stack[stackPos-1]);}
-    inline void pvarasin_() {stack[stackPos++]=asin(readVar());}
-    inline void pvalasin_() {stack[stackPos++]=asin(readVal());}
-    inline void acos_(){stack[stackPos-1]=acos(stack[stackPos-1]);}
-    inline void pvaracos_() {stack[stackPos++]=acos(readVar());}
-    inline void pvalacos_() {stack[stackPos++]=acos(readVal());}
-    inline void atan_(){stack[stackPos-1]=atan(stack[stackPos-1]);}
-    inline void pvaratan_() {stack[stackPos++]=atan(readVar());}
-    inline void pvalatan_() {stack[stackPos++]=atan(readVal());}
-    inline void sinh_(){stack[stackPos-1]=sinh(stack[stackPos-1]);}
-    inline void pvarsinh_() {stack[stackPos++]=sinh(readVar());}
-    inline void pvalsinh_() {stack[stackPos++]=sinh(readVal());}
-    inline void cosh_(){stack[stackPos-1]=cosh(stack[stackPos-1]);}
-    inline void pvarcosh_() {stack[stackPos++]=cosh(readVar());}
-    inline void pvalcosh_() {stack[stackPos++]=cosh(readVal());}
-    inline void tanh_(){stack[stackPos-1]=tanh(stack[stackPos-1]);}
-    inline void pvartanh_() {stack[stackPos++]=tanh(readVar());}
-    inline void pvaltanh_() {stack[stackPos++]=tanh(readVal());}
-    inline void asinh_(){stack[stackPos-1]=asinh(stack[stackPos-1]);}
-    inline void pvarasinh_() {stack[stackPos++]=asinh(readVar());}
-    inline void pvalasinh_() {stack[stackPos++]=asinh(readVal());}
-    inline void acosh_(){stack[stackPos-1]=acosh(stack[stackPos-1]);}
-    inline void pvaracosh_() {stack[stackPos++]=acosh(readVar());}
-    inline void pvalacosh_() {stack[stackPos++]=acosh(readVal());}
-    inline void atanh_(){stack[stackPos-1]=atanh(stack[stackPos-1]);}
-    inline void pvaratanh_() {stack[stackPos++]=atanh(readVar());}
-    inline void pvalatanh_() {stack[stackPos++]=atanh(readVal());}
-    inline void read(void* dst,int size){memcpy(dst,dataptr,size); dataptr+=size;}
-    inline void write(void* src,int size){memcpy(dataptr,src,size);dataptr+=size;}
-    inline C readVal(){C val=*(reinterpret_cast<C*>(dataptr)); dataptr+=sizeof(C); return val;}
-    inline C* readPtr(){
+    void pushvar_() {pushVar(readInt());}
+    void pushval_() {pushVal(readVal());}
+    void add_(){stack[stackPos-2]+=stack[stackPos-1];--stackPos;}
+    void pvaradd_(){stack[stackPos-1]+=readVar();}
+    void pvaladd_(){stack[stackPos-1]+=readVal();}
+    void sub_(){stack[stackPos-2]-=stack[stackPos-1];--stackPos;}
+    void pvarsub_(){stack[stackPos-1]-=readVar();}
+    void pvalsub_(){stack[stackPos-1]-=readVal();}
+    void mult_(){stack[stackPos-2]*=stack[stackPos-1];--stackPos;}
+    void pvarmult_(){stack[stackPos-1]*=readVar();}
+    void pvalmult_(){stack[stackPos-1]*=readVal();}
+    void div_(){stack[stackPos-2]/=stack[stackPos-1];--stackPos;}
+    void pvardiv_(){stack[stackPos-1]/=readVar();}
+    void pvaldiv_(){stack[stackPos-1]/=readVal();}
+    void inv_(){stack[stackPos-1]=1/stack[stackPos-1];}
+    void pvarinv_(){stack[stackPos++]=1/(readVar());}
+    void pvalinv_(){stack[stackPos++]=1/(readVal());}
+    void pow_n_(){stack[stackPos-1]=pow_(stack[stackPos-1],readInt());}
+    void pvarpow_n_(){C val=readVar(); stack[stackPos++]=pow_(val,readInt());}
+    void pvalpow_n_(){C val=readVal(); stack[stackPos++]=pow_(val,readInt());}
+    void pow_() {stack[stackPos-2]=pow(stack[stackPos-2],stack[stackPos-1]);--stackPos;}
+    void pvarpow_(){stack[stackPos-1]=pow(stack[stackPos-1],readVar());}
+    void pvalpow_(){stack[stackPos-1]=pow(stack[stackPos-1],readVal());}
+    void sin_() {stack[stackPos-1]=sin(stack[stackPos-1]);}
+    void pvarsin_(){stack[stackPos++]=sin(readVar());}
+    void pvalsin_(){stack[stackPos++]=sin(readVal());}
+    void cos_() {stack[stackPos-1]=cos(stack[stackPos-1]);}
+    void pvarcos_(){stack[stackPos++]=cos(readVar());}
+    void pvalcos_(){stack[stackPos++]=cos(readVal());}
+    void tan_() {stack[stackPos-1]=tan(stack[stackPos-1]);}
+    void pvartan_(){stack[stackPos++]=tan(readVar());}
+    void pvaltan_(){stack[stackPos++]=tan(readVal());}
+    void exp_() {stack[stackPos-1]=exp(stack[stackPos-1]);}
+    void pvarexp_(){stack[stackPos++]=exp(readVar());}
+    void pvalexp_(){stack[stackPos++]=exp(readVal());}
+    void log_() {stack[stackPos-1]=log(stack[stackPos-1]);}
+    void pvarlog_(){stack[stackPos++]=log(readVar());}
+    void pvallog_(){stack[stackPos++]=log(readVal());}
+    void re_() {stack[stackPos-1]=Re(stack[stackPos-1]);}
+    void pvarre_(){stack[stackPos++]=Re(readVar());}
+    void pvalre_(){stack[stackPos++]=Re(readVal());}
+    void im_() {stack[stackPos-1]=Im(stack[stackPos-1]);}
+    void pvarim_(){stack[stackPos++]=Im(readVar());}
+    void pvalim_(){stack[stackPos++]=Im(readVal());}
+    void sqrt_() {stack[stackPos-1]=sqrt(stack[stackPos-1]);}
+    void pvarsqrt_(){stack[stackPos++]=sqrt(readVar());}
+    void pvalsqrt_(){stack[stackPos++]=sqrt(readVal());}
+    void neg_() {stack[stackPos-1]=-stack[stackPos-1];}
+    void pvarneg_() {stack[stackPos++]=-readVar();}
+    void pvalneg_() {stack[stackPos++]=-readVal();}
+    void abs_() {stack[stackPos-1]=std::abs(stack[stackPos-1]);}
+    void pvarabs_() {stack[stackPos++]=std::abs(readVar());}
+    void pvalabs_() {stack[stackPos++]=std::abs(readVal());}
+    void asin_(){stack[stackPos-1]=asin(stack[stackPos-1]);}
+    void pvarasin_() {stack[stackPos++]=asin(readVar());}
+    void pvalasin_() {stack[stackPos++]=asin(readVal());}
+    void acos_(){stack[stackPos-1]=acos(stack[stackPos-1]);}
+    void pvaracos_() {stack[stackPos++]=acos(readVar());}
+    void pvalacos_() {stack[stackPos++]=acos(readVal());}
+    void atan_(){stack[stackPos-1]=atan(stack[stackPos-1]);}
+    void pvaratan_() {stack[stackPos++]=atan(readVar());}
+    void pvalatan_() {stack[stackPos++]=atan(readVal());}
+    void sinh_(){stack[stackPos-1]=sinh(stack[stackPos-1]);}
+    void pvarsinh_() {stack[stackPos++]=sinh(readVar());}
+    void pvalsinh_() {stack[stackPos++]=sinh(readVal());}
+    void cosh_(){stack[stackPos-1]=cosh(stack[stackPos-1]);}
+    void pvarcosh_() {stack[stackPos++]=cosh(readVar());}
+    void pvalcosh_() {stack[stackPos++]=cosh(readVal());}
+    void tanh_(){stack[stackPos-1]=tanh(stack[stackPos-1]);}
+    void pvartanh_() {stack[stackPos++]=tanh(readVar());}
+    void pvaltanh_() {stack[stackPos++]=tanh(readVal());}
+    void asinh_(){stack[stackPos-1]=asinh(stack[stackPos-1]);}
+    void pvarasinh_() {stack[stackPos++]=asinh(readVar());}
+    void pvalasinh_() {stack[stackPos++]=asinh(readVal());}
+    void acosh_(){stack[stackPos-1]=acosh(stack[stackPos-1]);}
+    void pvaracosh_() {stack[stackPos++]=acosh(readVar());}
+    void pvalacosh_() {stack[stackPos++]=acosh(readVal());}
+    void atanh_(){stack[stackPos-1]=atanh(stack[stackPos-1]);}
+    void pvaratanh_() {stack[stackPos++]=atanh(readVar());}
+    void pvalatanh_() {stack[stackPos++]=atanh(readVal());}
+    void read(void* dst,int size){memcpy(dst,dataptr,size); dataptr+=size;}
+    void write(void* src,int size){memcpy(dataptr,src,size);dataptr+=size;}
+    C readVal(){C val=*(reinterpret_cast<C*>(dataptr)); dataptr+=sizeof(C); return val;}
+    C* readPtr(){
         C* ptr=*(reinterpret_cast<C**>(dataptr));
         dataptr+=sizeof(C*);
         return ptr;
     }
-    inline C readVar(){return variables[readInt()];}
-    inline int readInt(){
+    C readVar(){return variables[readInt()];}
+    int readInt(){
         int i=*(reinterpret_cast<int*>(dataptr));
         dataptr+=sizeof(int);
         return i;
     }
-    inline void writeVal(C val){write(&val,sizeof(C));}
-    inline void writePtr(C* ptr){write(&ptr,sizeof(C*));}
-    inline void writeInt(int i){write(&i,sizeof(int));}
+    void writeVal(C val){write(&val,sizeof(C));}
+    void writePtr(C* ptr){write(&ptr,sizeof(C*));}
+    void writeInt(int i){write(&i,sizeof(int));}
     void writeInstr(int instruction)
     {
         if(*(instrptr-1)<=1 && instruction>1)
