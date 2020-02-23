@@ -1,11 +1,11 @@
 #include "mathparsermainwindow.h"
 #include "ui_mathparsermainwindow.h"
 
-double rangeXlower=-10;
-double rangeXupper=10;
-double rangeYlower=-10;
-double rangeYupper=10;
-int nPlotPoints=500;
+constexpr double rangeXlower=-10;
+constexpr double rangeXupper=10;
+constexpr double rangeYlower=-10;
+constexpr double rangeYupper=10;
+constexpr int nPlotPoints=500;
 
 MathParserMainWindow::MathParserMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -17,8 +17,8 @@ MathParserMainWindow::MathParserMainWindow(QWidget *parent) :
 
     for(char c='a';c<='z';++c)
     {
-        varptr[(int)(c-'a')]=mathEval.getVarPtr(c);
-        *(varptr[(int)(c-'a')])=0.;
+        varptr[static_cast<size_t>(c-'a')]=mathEval.getVarPtr(c);
+        *(varptr[static_cast<size_t>(c-'a')])=0.;
         ui->variablesComboBox->addItem(QString(QChar(c)));
     }
 }
@@ -30,22 +30,22 @@ MathParserMainWindow::~MathParserMainWindow()
 
 void MathParserMainWindow::drawCoordinateSystem()
 {
-    double xstep=(double)ui->plotGraphicsView->width()/(rangeXupper-rangeXlower);
-    double ystep=(double)ui->plotGraphicsView->height()/(rangeYupper-rangeYlower);
+    double xstep=static_cast<double>(ui->plotGraphicsView->width())/(rangeXupper-rangeXlower);
+    double ystep=static_cast<double>(ui->plotGraphicsView->height())/(rangeYupper-rangeYlower);
     double barlength=20;
     scene.addLine(0,ui->plotGraphicsView->height()/2,ui->plotGraphicsView->width(),ui->plotGraphicsView->height()/2);
     scene.addLine(ui->plotGraphicsView->width()/2,0,ui->plotGraphicsView->width()/2,ui->plotGraphicsView->height());
-    for(int x=0;x<(int)(rangeXupper-rangeXlower);++x)
+    for(size_t x=0;x<static_cast<size_t>(rangeXupper-rangeXlower);++x)
         scene.addLine(x*xstep,ui->plotGraphicsView->height()/2-barlength/2,x*xstep,ui->plotGraphicsView->height()/2+barlength/2);
-    for(int y=0;y<(int)(rangeYupper-rangeYlower);++y)
+    for(size_t y=0;y<static_cast<size_t>(rangeYupper-rangeYlower);++y)
         scene.addLine(ui->plotGraphicsView->width()/2-barlength/2,y*ystep,ui->plotGraphicsView->width()/2+barlength/2,y*ystep);
 }
 
 void MathParserMainWindow::drawPlot()
 {
-    double *xptr=varptr[(int)('x'-'a')];
+    double *xptr=varptr[static_cast<size_t>('x'-'a')];
     double xtmp=*xptr;
-    double xstep=(rangeXupper-rangeXlower)/(double)(nPlotPoints-1);
+    double xstep=(rangeXupper-rangeXlower)/static_cast<double>(nPlotPoints-1);
     double result;
     bool first=true;
     QPointF lastpoint;
@@ -57,7 +57,7 @@ void MathParserMainWindow::drawPlot()
         result=mathEval.result();
         if(result==result)
         {
-            currentpoint=QPointF((double)i/(double)(nPlotPoints-1)*ui->plotGraphicsView->width(),(0.5-(result/(rangeYupper-rangeYlower)))*ui->plotGraphicsView->height());
+            currentpoint=QPointF(static_cast<double>(i)/(nPlotPoints-1)*ui->plotGraphicsView->width(),(0.5-(result/(rangeYupper-rangeYlower)))*ui->plotGraphicsView->height());
             if(!first)
                 scene.addLine(QLineF(lastpoint,currentpoint));
             lastpoint=currentpoint;
