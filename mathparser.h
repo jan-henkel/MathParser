@@ -618,7 +618,7 @@ private:
     {
         char c=str[pos].toLower().toLatin1();
         mathEval->writeInstr(PUSHVAR);
-        mathEval->writeInt((int)(c-'a'));
+        mathEval->writeInt(static_cast<int>(c-'a'));
         return 1;
     }
     int parseFunc(int pos)
