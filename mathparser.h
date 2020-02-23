@@ -411,17 +411,23 @@ public:
     }
     void setInstrEnd(){endInstr=instrptr;}
 
-    C pow_(C val, int n){return n>0?pow1(val,n):n<0?1./pow1(val,-n):1.;}
-    C pow1(C val,int n){
+    C pow_(C val, int n) {
+        if(n<0) {
+            val = 1. / val;
+            n = -n;
+        }
         if(n==1)
             return val;
         else
         {
-            C tmp=pow1(val,n/2);
-            tmp*=tmp;
-            if(n%2)
-                tmp*=val;
-            return tmp;
+            C result = 1.;
+            while(n) {
+                if(n % 2)
+                    result *= val;
+                val = val * val;
+                n /= 2;
+            }
+            return result;
         }
     }
 
