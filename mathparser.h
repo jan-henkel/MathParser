@@ -8,6 +8,7 @@
 #include <string.h>
 #include <cmath>
 #include <math.h>
+#include <complex>
 #include <QString>
 
 typedef QString String;
@@ -28,6 +29,16 @@ inline double Re(double r)
 inline double Im(double)
 {
     return 0;
+}
+
+inline double Re(std::complex<double> c)
+{
+    return c.real();
+}
+
+inline double Im(std::complex<double> c)
+{
+    return c.imag();
 }
 
 template <class C>
@@ -308,9 +319,9 @@ public:
     void div_(){stack[stackPos-2]/=stack[stackPos-1];--stackPos;}
     void pvardiv_(){stack[stackPos-1]/=readVar();}
     void pvaldiv_(){stack[stackPos-1]/=readVal();}
-    void inv_(){stack[stackPos-1]=1/stack[stackPos-1];}
-    void pvarinv_(){stack[stackPos++]=1/(readVar());}
-    void pvalinv_(){stack[stackPos++]=1/(readVal());}
+    void inv_(){stack[stackPos-1]=1./stack[stackPos-1];}
+    void pvarinv_(){stack[stackPos++]=1./(readVar());}
+    void pvalinv_(){stack[stackPos++]=1./(readVal());}
     void pow_n_(){stack[stackPos-1]=pow_(stack[stackPos-1],readInt());}
     void pvarpow_n_(){C val=readVar(); stack[stackPos++]=pow_(val,readInt());}
     void pvalpow_n_(){C val=readVal(); stack[stackPos++]=pow_(val,readInt());}
@@ -400,7 +411,7 @@ public:
     }
     void setInstrEnd(){endInstr=instrptr;}
 
-    C pow_(C val, int n){return n>0?pow1(val,n):n<0?1/pow1(val,-n):1;}
+    C pow_(C val, int n){return n>0?pow1(val,n):n<0?1./pow1(val,-n):1.;}
     C pow1(C val,int n){
         if(n==1)
             return val;
